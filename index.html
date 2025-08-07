@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Health Tracker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+
+    <nav class="navbar navbar-dark bg-dark fixed-top mb-4">
+        <div class="container-fluid justify-content-center">
+            <span class="navbar-brand mx-auto" id="navbar"> Health Tracker Dashboard</span>
+        </div>
+    </nav>
+    
+    <a id="BMI Tracker"></a>
+    <div class="container mt-6 pt-5" style="padding-top:100px;">
+        <div class="row text-center">
+            <div class="col-md-4 mb-4">  
+                <div class="card p-3 shadow">
+                    <h5>BMI Tracker</h5>
+                    <form method="POST" action="/">
+                        <div class="mb-2">
+                            <label for="height">Height (cm)</label>
+                            <input type="number" class="form-control" name="height" required>
+                        </div>
+                        <div class="mb-2">
+                            <label for="weight">Weight (kg)</label>
+                            <input type="number" class="form-control" name="weight" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary mt-2">Calculate BMI</button>
+                    </form>
+                
+                    {% if result %}
+                        <div class="alert alert-info mt-3">
+                            Your BMI is <strong>{{ result.bmi }}</strong> — {{ result.status }}
+                        </div>
+                    {% endif %}
+                
+                    {% if latest %}
+                        <div class="mt-3">
+                            <h6>Latest Entry:</h6>
+                            <p>{{ latest[0] }} — {{ latest[3] }} ({{ latest[4] }})</p>
+                        </div>
+                    {% endif %}
+                </div>                
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card p-3 shadow mt-4">
+                    <h5>Water Intake Tracker</h5>
+                    <form method="POST" action="/water">
+                        <div class="mb-2">
+                            <label for="water">Water Consumed (mL)</label>
+                            <input type="number" class="form-control" name="water" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary mt-2">Log Water</button>
+                    </form>
+                
+                    {% if water_today %}
+                        <div class="alert alert-info mt-3">
+                            Total water today: <strong>{{ water_today }} mL</strong>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class=" card p-3 shadow mt-4">
+                    <h5>Sleep Tracker</h5>
+                    <form method="POST" action="/sleep">
+                        <div class ="mb-2">
+                            <label for="sleep_hours"></label>
+                            <input type="number" class="form-control" name="sleep_hours" placeholder="Sleep Hours" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary mt-2">Log Sleep</button>
+                    </form>
+                    {% if sleep_today %}
+                    <div class="alert alert-info mt-3">
+                        <strong>{{ sleep_today }}</strong> hours of sleep logged today.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-4 mb-2">
+             <div class="card p-3 shadow">Steps Counter</div>
+             <form action="/steps_counter" method="POST">
+                <label for="steps_counter"> steps </label>
+                <input type="number" id="steps_counters" name="steps_counter" required>
+                <button type="submit"> Submit</button>
+             </form>
+
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card p-3 shadow">Graphs & Trends</div>
+                    <title> Graphs & Trends</title>
+                    <div style=" height: 50vh; width: 50%;">
+                        <canvas id="myChart"></canvas>
+                    </div>
+
+                    <script>
+                        const labels = JSON.parse('{{ labels | tojson | safe }}');
+                        const chartData = JSON.parse ('{{ chart_data | tojson | safe}}');
+
+                        const data = {
+                            labels: labels, 
+                            datasets: [{
+                                label: 'BMI', 
+                                backgroundColor: 'rgb (255, 99, 132)',
+                                borderColor: 'rgb (255, 99, 132)',
+                                data: chartData, 
+                            }]
+                        }; 
+
+                        const config = {
+                            type: 'line',
+                            data: data, 
+                            options: {maintainAspectRatio: false}
+                        };
+                        
+                        const myChart = new Chart(
+                            document.getElementById('myChart'), 
+                            config
+                        ); 
+
+                    </script>
+                </body>
+
+            </div>
+        </div>
+    </div>
+    <button id="open-chatbot" class="btn btn-primary" style="position:fixed;bottom:30px;right:30px;z-index:1000;">
+    Chat with Sally
+</button>
+
+<div id="chatbot-modal" class="modal" tabindex="-1" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.5);z-index:2000;">
+  <div style="background:white;max-width:400px;margin:10vh auto;padding:20px;border-radius:10px;position:relative;">
+    <button id="close-chatbot" style="position:absolute;top:10px;right:10px;">&times;</button>
+    <h5>Health advice </h5>
+    <div>
+      <button class="chat-question btn btn-outline-secondary mb-2" data-question="How can I increase my water intake?">How can I increase my water intake?</button>
+      <button class="chat-question btn btn-outline-secondary mb-2" data-question="How can I walk more steps?">How can I walk more steps?</button>
+      <button class="chat-question btn btn-outline-secondary mb-2" data-question="How can I improve my sleep?">How can I improve my sleep?</button>
+      <button class="chat-question btn btn-outline-secondary mb-2" data-question="What should I eat to gain weight?">What should I eat to gain weight?</button>
+      <button class="chat-question btn btn-outline-secondary mb-2" data-question="What should I eat to lose weight?">What should I eat to lose weight?</button>
+    </div>
+    <div id="chatbot-response" class="mt-3"></div>
+  </div>
+</div>
+
+<script>
+document.getElementById('open-chatbot').onclick = function() {
+    document.getElementById('chatbot-modal').style.display = 'block';
+};
+document.getElementById('close-chatbot').onclick = function() {
+    document.getElementById('chatbot-modal').style.display = 'none';
+};
+document.querySelectorAll('.chat-question').forEach(btn => {
+    btn.onclick = async function() {
+        const question = btn.getAttribute('data-question');
+        const formData = new FormData();
+        formData.append('message', question);
+        const res = await fetch('/chatbot', {method: 'POST', body: formData});
+        const json = await res.json();
+        document.getElementById('chatbot-response').innerText = json.response;
+    };
+});
+</script>
+
+</body>
+</html>

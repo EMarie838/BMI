@@ -1,0 +1,34 @@
+body {
+    background: linear-gradient(217deg, rgb(126, 5, 104), rgba(255, 0, 0, 0.6) 70.71%),
+                linear-gradient(127deg, rgb(8, 0, 204), rgb(140, 255, 251)),
+                linear-gradient(336deg, rgb(0, 255, 140), rgb(255, 251, 0)); 
+    background-blend-mode: overlay;
+    font-family: 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card {
+    width: 250px;
+    padding: 20px;
+    border-radius: 12px;
+    background-color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.navbar{
+    padding: 10px;
+}
+
+.BMI Tracker{
+    padding: 56px;
+}
